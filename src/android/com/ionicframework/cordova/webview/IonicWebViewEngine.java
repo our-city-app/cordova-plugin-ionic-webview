@@ -1,10 +1,10 @@
 package com.ionicframework.cordova.webview;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -14,23 +14,17 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import org.apache.cordova.ConfigXmlParser;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPreferences;
-import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.CordovaWebViewEngine;
-import org.apache.cordova.NativeToJsMessageQueue;
-import org.apache.cordova.PluginManager;
+import org.apache.cordova.*;
+import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewClient;
 import org.apache.cordova.engine.SystemWebViewEngine;
-import org.apache.cordova.engine.SystemWebView;
 
 public class IonicWebViewEngine extends SystemWebViewEngine {
   public static final String TAG = "IonicWebViewEngine";
 
   private WebViewLocalServer localServer;
   private String CDV_LOCAL_SERVER;
+  private String assetsPath = "www";
   private static final String LAST_BINARY_VERSION_CODE = "lastBinaryVersionCode";
   private static final String LAST_BINARY_VERSION_NAME = "lastBinaryVersionName";
 
@@ -52,6 +46,11 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
     Log.d(TAG, "Ionic Web View Engine Starting Right Up 3...");
   }
 
+  public IonicWebViewEngine(SystemWebView webView, CordovaPreferences preferences, String assetsPath) {
+    super(webView, preferences);
+    this.assetsPath = assetsPath;
+  }
+
   @Override
   public void init(CordovaWebView parentWebView, CordovaInterface cordova, final CordovaWebViewEngine.Client client,
                    CordovaResourceApi resourceApi, PluginManager pluginManager,
@@ -64,7 +63,7 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
     CDV_LOCAL_SERVER = scheme + "://" + hostname;
 
     localServer = new WebViewLocalServer(cordova.getActivity(), hostname, true, parser, scheme);
-    localServer.hostAssets("www");
+    localServer.hostAssets(this.assetsPath);
 
     webView.setWebViewClient(new ServerClient(this, parser));
 
@@ -134,7 +133,7 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
       super.onPageStarted(view, url, favicon);
       String launchUrl = parser.getLaunchUrl();
-      if (!launchUrl.contains(WebViewLocalServer.httpsScheme) && !launchUrl.contains(WebViewLocalServer.httpScheme) && url.equals(launchUrl)) {
+      if (!launchUrl.contains(WebViewLocalServer.httpsScheme) && !launchUrl.contains(WebViewLocalServer.httpScheme) && url.endsWith("index.html")) {
         view.stopLoading();
         // When using a custom scheme the app won't load if server start url doesn't end in /
         String startUrl = CDV_LOCAL_SERVER;

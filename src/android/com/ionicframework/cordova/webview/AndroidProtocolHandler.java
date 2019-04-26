@@ -27,6 +27,10 @@ public class AndroidProtocolHandler {
   }
 
   public InputStream openAsset(String path) throws IOException {
+    // Support downloaded assets, so these are present in the assets dir
+    if (path.startsWith("file://")) {
+        return new FileInputStream(path.replace("file://", ""));
+    }
     return context.getAssets().open(path, AssetManager.ACCESS_STREAMING);
   }
 
