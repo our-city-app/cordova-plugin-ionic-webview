@@ -28,6 +28,7 @@ public class CustomConfigXmlParser extends ConfigXmlParser {
         this.customLaunchUrl = url;
     }
 
+    @Override
     public String getLaunchUrl() {
         return customLaunchUrl;
     }
