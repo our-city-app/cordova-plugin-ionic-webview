@@ -25,6 +25,7 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
   private WebViewLocalServer localServer;
   private String CDV_LOCAL_SERVER;
   private String assetsPath = "www";
+  private String launchUrl;
   private static final String LAST_BINARY_VERSION_CODE = "lastBinaryVersionCode";
   private static final String LAST_BINARY_VERSION_NAME = "lastBinaryVersionName";
 
@@ -46,16 +47,18 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
     Log.d(TAG, "Ionic Web View Engine Starting Right Up 3...");
   }
 
-  public IonicWebViewEngine(SystemWebView webView, CordovaPreferences preferences, String assetsPath) {
+  public IonicWebViewEngine(SystemWebView webView, CordovaPreferences preferences, String assetsPath, String launchUrl) {
     super(webView, preferences);
     this.assetsPath = assetsPath;
+    this.launchUrl = launchUrl;
   }
 
   @Override
   public void init(CordovaWebView parentWebView, CordovaInterface cordova, final CordovaWebViewEngine.Client client,
                    CordovaResourceApi resourceApi, PluginManager pluginManager,
                    NativeToJsMessageQueue nativeToJsMessageQueue) {
-    ConfigXmlParser parser = new ConfigXmlParser();
+    CustomConfigXmlParser parser = new CustomConfigXmlParser();
+    parser.setCustomLaunchUrl(launchUrl);
     parser.parse(cordova.getActivity());
 
     String hostname = preferences.getString("Hostname", "localhost");
@@ -133,7 +136,7 @@ public class IonicWebViewEngine extends SystemWebViewEngine {
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
       super.onPageStarted(view, url, favicon);
       String launchUrl = parser.getLaunchUrl();
-      if (!launchUrl.contains(WebViewLocalServer.httpsScheme) && !launchUrl.contains(WebViewLocalServer.httpScheme) && url.endsWith("index.html")) {
+      if (!launchUrl.contains(WebViewLocalServer.httpsScheme) && !launchUrl.contains(WebViewLocalServer.httpScheme) && url.equals(launchUrl)) {
         view.stopLoading();
         // When using a custom scheme the app won't load if server start url doesn't end in /
         String startUrl = CDV_LOCAL_SERVER;
