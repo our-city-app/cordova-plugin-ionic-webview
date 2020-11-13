@@ -146,6 +146,13 @@ NSTimer *timer;
     return wwwPath;
 }
 
+-(NSString *) getLaunchUrl {
+    if (!self.launchUrl) {
+        self.launchUrl = @"/index.html";
+    }
+    return self.launchUrl;;
+}
+
 -(BOOL) isNewBinary
 {
     NSString * versionCode = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
@@ -255,7 +262,7 @@ NSTimer *timer;
     WKWebViewConfiguration* configuration = [self createConfigurationFromSettings:settings];
     configuration.userContentController = userContentController;
 
-    self.handler = [[IONAssetHandler alloc] initWithBasePath:[self getStartPath] andScheme:scheme];
+    self.handler = [[IONAssetHandler alloc] initWithBasePath:[self getStartPath] andScheme:scheme andLaunchUrl:[self getLaunchUrl]];
     [configuration setURLSchemeHandler:self.handler forURLScheme:scheme];
 
     // re-create WKWebView, since we need to update configuration

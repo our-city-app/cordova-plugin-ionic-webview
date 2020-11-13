@@ -5,9 +5,10 @@
 
 @property (nonatomic, strong) NSString * basePath;
 @property (nonatomic, strong) NSString * scheme;
+@property (nonatomic, strong) NSString * launchUrl;
 
 -(void)setAssetPath:(NSString *)assetPath;
-- (instancetype)initWithBasePath:(NSString *)basePath andScheme:(NSString *)scheme;
+- (instancetype)initWithBasePath:(NSString *)basePath andScheme:(NSString *)scheme andLaunchUrl:(NSString *)launchUrl;
 
 
 @end

@@ -8,11 +8,12 @@
     self.basePath = assetPath;
 }
 
-- (instancetype)initWithBasePath:(NSString *)basePath andScheme:(NSString *)scheme {
+- (instancetype)initWithBasePath:(NSString *)basePath andScheme:(NSString *)scheme andLaunchUrl:(NSString *)launchUrl {
     self = [super init];
     if (self) {
         _basePath = basePath;
         _scheme = scheme;
+        _launchUrl = launchUrl;
     }
     return self;
 }
@@ -30,7 +31,7 @@
         } else {
             startPath = self.basePath;
             if ([stringToLoad isEqualToString:@""] || [url.pathExtension isEqualToString:@""]) {
-                startPath = [startPath stringByAppendingString:@"/index.html"];
+                startPath = [startPath stringByAppendingString:self.launchUrl];
             } else {
                 startPath = [startPath stringByAppendingString:stringToLoad];
             }
