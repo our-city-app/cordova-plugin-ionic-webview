@@ -16,3 +16,4 @@ node_modules
 xcuserdata
 package-lock.json
 
+.idea
